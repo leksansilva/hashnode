@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escolha a Pasta</title>
+  </head>
+  <body>
+    <input type="file" id="folderInput" webkitdirectory directory multiple />
+    <button id="calculateHash">Calcular Hash</button>
+    <p>Hash SHA-512 do código inteiro:</p>
+    <br />
+    <p id="loading" hidden>carregando...</p>
+    <p id="hashResult"></p>
+
+    <script>
+      document
+        .getElementById("calculateHash")
+        .addEventListener("click", async () => {
+          document.getElementById("loading").hidden = false;
+          const folderInput = document.getElementById("folderInput");
+          const files = folderInput.files;
+
+          if (files.length === 0) {
+            alert("Por favor, escolha uma pasta.");
+            return;
+          }
+
+          const formData = new FormData();
+          Array.from(files).forEach((file) => formData.append("files", file));
+
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          document.getElementById(
+            "hashResult"
+          ).innerText = `${data.combinedHash}`;
+          document.getElementById("loading").hidden = true;
+        });
+    </script>
+  </body>
+</html>
